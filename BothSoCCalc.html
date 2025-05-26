@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EV Charging Calculator</title>
+    <title>EV Charge Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,15 +13,15 @@
         }
         .container {
             background-color: #fff;
-            padding: 25px;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-width: 450px; /* Slightly wider to accommodate selection */
-            margin: auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 30px auto;
         }
         h1 {
-            text-align: center;
             color: #0056b3;
+            text-align: center;
             margin-bottom: 25px;
         }
         .form-group {
@@ -29,25 +29,16 @@
         }
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="number"],
-        select {
-            width: calc(100% - 20px); /* Account for padding and border */
+        select, input[type="number"] {
+            width: calc(100% - 22px);
             padding: 10px;
-            margin-bottom: 5px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            box-sizing: border-box;
-            -webkit-appearance: none; /* Remove default select styling */
-            -moz-appearance: none;
-            appearance: none;
-            background-color: #fff;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow for select */
-            background-repeat: no-repeat;
-            background-position: right 0.7em top 50%, 0 0;
-            background-size: 0.65em auto, 100%;
+            font-size: 16px;
+            box-sizing: border-box; /* Include padding in width */
         }
         button {
             background-color: #007bff;
@@ -56,104 +47,111 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             width: 100%;
-            margin-top: 10px; /* Space above button */
+            margin-top: 20px;
         }
         button:hover {
             background-color: #0056b3;
         }
         #result {
-            margin-top: 25px;
-            padding: 15px;
-            background-color: #e9f7ef;
-            border: 1px solid #c3e6cb;
-            border-radius: 4px;
-            font-size: 1.1em;
+            margin-top: 30px;
             text-align: center;
-            min-height: 30px; /* Ensure space for result */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 15px;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            background-color: #e2f0d9;
         }
-        /* Styles for different result states */
-        #result.error {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
+        #result .result-text { /* Style for the explanatory text */
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
         }
-        #result.warning {
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-            color: #856404;
+        #result .highlight-kwh { /* New style for the H2 bold number and kWh */
+            margin: 0;
+            color: #28a745;
+            font-size: 2em; /* H2 size */
+            font-weight: bold; /* Bold text */
+            display: block; /* Ensures it's on its own line */
         }
-        #result.success {
-            background-color: #e9f7ef;
-            border-color: #c3e6cb;
-            color: #155724;
+        .error-message {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>EV Charging Calculator</h1>
+        <h1>EV Charge Calculator</h1>
 
         <div class="form-group">
-            <label for="batteryType">Select EV Battery Type:</label>
-            <select id="batteryType" onchange="calculateKWh()">
-                <option value="65">Chevrolet Bolt EUV (65 kWh)</option>
-                <option value="82">Volkswagen ID.4 (82 kWh)</option>
+            <label for="evModel">Select EV Model:</label>
+            <select id="evModel">
+                <option value="">--Please choose an EV--</option>
+                <option value="bolt">Bolt EV (65 kWh battery)</option>
+                <option value="id4">ID.4 EV (82 kWh battery)</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="currentSoc">Current State of Charge (SOC) %:</label>
-            <input type="number" id="currentSoc" min="0" max="100" value="50" oninput="calculateKWh()">
+            <label for="currentSOC">Current SOC (%):</label>
+            <input type="number" id="currentSOC" min="0" max="100" placeholder="Enter current State of Charge">
         </div>
 
         <button onclick="calculateKWh()">Calculate kWh Needed</button>
 
-        <div id="result" class="success"></div>
+        <div id="result">
+            </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const targetSoc = 80; // %
+        function calculateKWh() {
+            const evModel = document.getElementById('evModel').value;
+            const currentSOC = parseFloat(document.getElementById('currentSOC').value);
+            const resultDiv = document.getElementById('result');
 
-            window.calculateKWh = function() {
-                const batterySelect = document.getElementById('batteryType');
-                const currentSocInput = document.getElementById('currentSoc');
-                const resultDiv = document.getElementById('result');
+            if (!evModel) {
+                resultDiv.innerHTML = '<p class="error-message">Please select an EV model.</p>';
+                return;
+            }
 
-                const batteryCapacity = parseFloat(batterySelect.value);
-                const currentSoc = parseFloat(currentSocInput.value);
+            if (isNaN(currentSOC) || currentSOC < 0 || currentSOC > 100) {
+                resultDiv.innerHTML = '<p class="error-message">Please enter a valid current SOC (0-100%).</p>';
+                return;
+            }
 
-                // Reset result div classes
-                resultDiv.className = ''; // Clear previous classes
-                resultDiv.textContent = ''; // Clear previous text
+            let batteryCapacityKWh = 0;
+            let targetSOC = 80; // Target SOC for charging
 
-                if (isNaN(currentSoc) || currentSoc < 0 || currentSoc > 100) {
-                    resultDiv.textContent = 'Please enter a valid current SOC between 0 and 100.';
-                    resultDiv.classList.add('error');
-                    return;
-                }
+            if (evModel === 'bolt') {
+                batteryCapacityKWh = 65; // Bolt EV battery capacity
+            } else if (evModel === 'id4') {
+                batteryCapacityKWh = 82; // ID.4 EV battery capacity
+            }
 
-                if (currentSoc >= targetSoc) {
-                    resultDiv.textContent = `Your battery is already at or above the target ${targetSoc}% SOC!`;
-                    resultDiv.classList.add('warning');
-                    return;
-                }
+            // Calculate current kWh in battery
+            const currentKWhInBattery = (currentSOC / 100) * batteryCapacityKWh;
 
-                // Calculate the kWh needed
-                const kwhToReachTarget = (targetSoc - currentSoc) / 100 * batteryCapacity;
+            // Calculate target kWh for 80% SOC
+            const targetKWh = (targetSOC / 100) * batteryCapacityKWh;
 
-                resultDiv.textContent = `You need approximately ${kwhToReachTarget.toFixed(2)} kWh to charge to ${targetSoc}% SOC.`;
-                resultDiv.classList.add('success');
-            };
+            // Calculate kWh needed
+            let kWhNeeded = targetKWh - currentKWhInBattery;
 
-            // Call the function initially to display calculation for default values
-            calculateKWh();
-        });
+            // Ensure kWhNeeded is not negative (if current SOC is already above 80%)
+            if (kWhNeeded < 0) {
+                kWhNeeded = 0;
+                resultDiv.innerHTML = `<p class="result-text">Your EV is already at or above 80% SOC. No charge needed.</p>`;
+            } else {
+                // Use a span with a specific class for the bold H2 number and kWh label
+                resultDiv.innerHTML = `
+                    <p class="result-text">To reach 80% SOC, you will need:</p>
+                    <span class="highlight-kwh">${kWhNeeded.toFixed(2)} kWh</span>
+                `;
+            }
+        }
     </script>
 </body>
 </html>
