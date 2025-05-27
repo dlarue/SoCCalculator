@@ -158,10 +158,10 @@
             // Calculate kWh needed
             let kWhNeeded = targetKWh - currentKWhInBattery;
 
-            // Ensure kWhNeeded is not negative (if current SOC is already above 80%)
+            // Ensure kWhNeeded is not negative (if current SOC is  above 80%)
             if (kWhNeeded < 0) {
                 kWhNeeded = 0;
-                resultDiv.innerHTML = `<p class="result-text">Your EV is already at or above 80% SOC. No charge needed.</p>`;
+                resultDiv.innerHTML = `<p class="result-text">Your EV is already at or above ${targetSOC}% SOC. No charge needed.</p>`;
             } else {
                 // Use a span with a specific class for the bold H2 number and kWh label
                 resultDiv.innerHTML = `
