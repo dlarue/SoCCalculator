@@ -94,6 +94,7 @@
                 <option value="id4">ID.4 EV (82 kWh battery)</option>
                 <option value="leaf">Leaf EV (40 kWh battery)</option>
                 <option value="tardis">Tesla EV (81 kWh battery)</option>
+                <option value="house">House (48 kWh battery)</option>
             </select>
         </div>
 
@@ -147,6 +148,8 @@
                 batteryCapacityKWh = 40; // Leaf EV battery capacity
             } else if (evModel === 'tardis') {
                 batteryCapacityKWh = 81; // Tesla MYLR EV battery capacity
+            } else if (evModel === 'house') {
+                batteryCapacityKWh = 48; // 3*DIY Basengreen 314ah LFP battery capacity
             }
 
             // Calculate current kWh in battery
@@ -158,7 +161,7 @@
             // Calculate kWh needed
             let kWhNeeded = targetKWh - currentKWhInBattery;
 
-            // Ensure kWhNeeded is not negative (if current SOC is already above 80%)
+            // Ensure kWhNeeded is not negative (if current SOC is  above 80%)
             if (kWhNeeded < 0) {
                 kWhNeeded = 0;
                 resultDiv.innerHTML = `<p class="result-text">Your EV is already at or above ${targetSOC}% SOC. No charge needed.</p>`;
