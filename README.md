@@ -10,4 +10,4 @@ generate javascript web page for which accepts current SOC for a Bolt EV having 
 only make the number and kWh label size H2 and bold.
 
 Update Gemini generated sliders and defaults to 80% on EV change:
-generate javascript web page for which accepts current SOC for a Bolt EV having a 65 kWh battery or an ID.4 EV having a 82 kWh battery or a Leaf EV having a 40 kWh battery or a TeslaMYLR EV having a 81 kWh battery and calculates the number of kilowatt hours(kWh) needed to charge the battery to user defined SOC which is defaulted to 80% SOC and resets to 80% when the Bolt EV or ID.4 EV are selected. Make the returned number and label H2 size and bold.
+generate javascript web page for which accepts current SOC for a Bolt EV having a 65 kWh battery or an ID.4 EV having a 82 kWh battery or a Leaf EV having a 40 kWh battery or a TeslaMYLR EV having a 81 kWh battery and calculates the number of kilowatt hours(kWh) needed to charge the battery to user defined SOC which is defaulted to 80% SOC and resets to 80% when any EV is selected. Make the returned number and label H2 size and bold.
